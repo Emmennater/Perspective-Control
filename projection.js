@@ -9,6 +9,14 @@ class Projection {
     this.width = this.SIZE;
     this.height = this.SIZE / this.RATIO;
     this.graphic = createGraphics(this.width, this.height);
+
+    // Light
+    this.AMB = color(20);
+    this.lights = [];
+    this.lights.push({dir:{x:-0.5,y:1,z:0},col:color(40, 0, 0)});
+    this.lights.push({dir:{x:0.5,y:-0.2,z:-0.5},col:color(0, 0, 40)});
+    this.lights.push({dir:{x:-0.5,y:-0.8,z:0.5},col:color(0, 20, 0)});
+    this.lights.push({dir:{x:0.2,y:0.2,z:-1},col:color(50)});
   }
 
   init() {
@@ -93,7 +101,7 @@ class Projection {
     G.pop();
 
     if (!fullscreen())
-      image(G, 0, Overlay.height, this.miniSize, this.miniSize / this.RATIO);
+      image(G, 0, Overlay.visible ? Overlay.height : 0, this.miniSize, this.miniSize / this.RATIO);
     else image(G, 0, 0, width, height);
   }
 
@@ -162,24 +170,29 @@ class Projection {
     for (let i in World.objects) {
       let tris = World.objects[i].tris;
       for (let j in tris) {
-        //Light 1
-        let dir = { x: -0.5, y: 1, z: 0 };
-        let col = color(70);
-        let col2 = this.light(dir, tris[j].normal, col);
-        tris[j].col = col2;
+        tris[j].col = color(0);
+        for (let k in this.lights) {
+          let light = this.lights[k];
+          let col2 = this.light(light.dir, tris[j].normal, light.col);
+          let col3 = color(
+            max(red(tris[j].col), red(col2)),
+            max(green(tris[j].col), green(col2)),
+            max(blue(tris[j].col), blue(col2))
+          );
+          tris[j].col = col3;
+        }
       }
     }
 
     // Ambiance
-    let AMB = color(20);
     for (let i in World.objects) {
       let tris = World.objects[i].tris;
       for (let j in tris) {
         let col = tris[j].col;
         tris[j].col = color(
-          max(red(AMB), red(col)),
-          max(green(AMB), green(col)),
-          max(blue(AMB), blue(col))
+          max(red(this.AMB), red(col)),
+          max(green(this.AMB), green(col)),
+          max(blue(this.AMB), blue(col))
         );
       }
     }
@@ -211,19 +224,24 @@ class Projection {
     // Lighting
     tris = obj.tris;
     for (let i in tris) {
-      //Light 1
-      let dir = { x: -0.5, y: 1, z: 0 };
-      let col = color(70);
-      let col2 = this.light(dir, tris[i].normal, col);
-      tris[i].col = col2;
+      tris[i].col = color(0);
+      for (let k in this.lights) {
+        let light = this.lights[k];
+        let col2 = this.light(light.dir, tris[i].normal, light.col);
+        let col3 = color(
+          max(red(tris[i].col), red(col2)),
+          max(green(tris[i].col), green(col2)),
+          max(blue(tris[i].col), blue(col2))
+        );
+        tris[i].col = col3;
+      }
     }
-    let AMB = color(20);
     for (let i in tris) {
       let col = tris[i].col;
       tris[i].col = color(
-        max(red(AMB), red(col)),
-        max(green(AMB), green(col)),
-        max(blue(AMB), blue(col))
+        max(red(this.AMB), red(col)),
+        max(green(this.AMB), green(col)),
+        max(blue(this.AMB), blue(col))
       );
     }
   }

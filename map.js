@@ -11,6 +11,7 @@ class WorldMap {
   }
 
   run() {
+    if (!this.visible) return;
     this.interact();
     this.drawOverlay();
   }

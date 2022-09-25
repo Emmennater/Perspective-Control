@@ -17,6 +17,10 @@ function keyPressed() {
   if (key == "y") {
     setYDivRatio();
   }
+
+  if (key == "m") {
+    Overlay.visible = !Overlay.visible;
+  }
 }
 
 function keyReleased() {

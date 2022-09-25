@@ -4,12 +4,16 @@ class Scene {
   }
 
   init() {
+    // this.objects.push(new Box(-1.5, -1.5, -1.5, 3, 3, 3));
+    // this.objects.push(new Box(-9, 0, -5, 20, 1, 10));
+
     this.objects.push(new Box(-1, 2, -1, 2, 2, 2));
     this.objects.push(new Box(-9, 0, -5, 4, 4, 4));
     this.objects.push(new Box(4, 8, -4, 4, 4, 4));
     this.objects.push(new Box(-10, 0, -5, 1, 15, 8));
     this.objects.push(new Box(9, 0, -5, 1, 5, 8));
     this.objects.push(new Box(-10, 15, -5, 20, 1, 8));
+    this.objects.push(new Box(-4, 10, 1, 2, 2, 2));
   }
 }
 

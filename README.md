@@ -9,6 +9,8 @@ of the 3D objects
   with the right side of your monitor
 - Press y to calibrate when head is aligned<br>
   with the top side of your monitor
+- Press c to calibrate when head is aligned<br>
+  with the center of your monitor
 - Press m to toggle minimap
 
 run the html to witness greatness or just go to this link:<br>

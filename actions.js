@@ -14,8 +14,12 @@ function keyPressed() {
     setXDivRatio();
   }
 
-  if (key == "y") {
-    setYDivRatio();
+  if (key == "z") {
+    setZDivRatio();
+  }
+
+  if (key == "c") {
+    setCenter();
   }
 
   if (key == "m") {

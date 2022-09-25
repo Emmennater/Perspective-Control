@@ -79,8 +79,11 @@ function setup() {
   Engine.init();
   // Engine.run();
 
+  // Eye tracking fine tuning (adjusting)
   X_DIV_RATIO = 32.585566103783;
-  Y_DIV_RATIO = 35.918339113960144;
+  Z_DIV_RATIO = 35.918339113960144;
+  X_OFFSET = 0;
+  Z_OFFSET = 0;
 }
 
 function draw() {
@@ -91,9 +94,9 @@ function draw() {
   if (landmarks) {
     let iris = getIris();
     if (iris != null) {
-      DATA.headX = -iris.center.x / X_DIV_RATIO;
+      DATA.headX = (-iris.center.x) / X_DIV_RATIO + X_OFFSET;
       DATA.headY = iris.center.y;
-      DATA.headZ = -iris.center.z / Y_DIV_RATIO;
+      DATA.headZ = (-iris.center.z) / Z_DIV_RATIO + Z_OFFSET;
     }
   }
 
@@ -196,12 +199,24 @@ function setXDivRatio() {
   }
 }
 
-function setYDivRatio() {
+function setZDivRatio() {
   if (landmarks) {
     let iris = getIris();
     if (iris != null) {
-      let y = -iris.center.y;
-      Y_DIV_RATIO = y / (SCREEN_HEIGHT / 2);
+      let z = -iris.center.z;
+      Z_DIV_RATIO = z / (SCREEN_HEIGHT / 2);
+    }
+  }
+}
+
+function setCenter() {
+  if (landmarks) {
+    let iris = getIris();
+    if (iris != null) {
+      let x = iris.center.x / X_DIV_RATIO;
+      let z = iris.center.z / Z_DIV_RATIO;
+      X_OFFSET = x;
+      Y_OFFSET = z;
     }
   }
 }

@@ -1,0 +1,31 @@
+
+/* Calculate FOV
+      Basic trigonometry:
+      ~ FOV = atan(halfScreenWidth / distanceFromScreen)
+      Epiphany: No fov because looking at different angles
+                generates inconsistant fovs
+    */
+    // this.fovx = atan(SCREEN_WIDTH / 2 / this.near);
+    // this.fovy = atan(SCREEN_HEIGHT / 2 / this.near);
+
+/**
+* findLinePlaneIntersectionCoords (to avoid requiring unnecessary instantiation)
+* Given points p with px py pz and q that define a line, and the plane
+* of formula ax+by+cz+d = 0, returns the intersection point or null if none.
+* <a, b, c> is the normal vector of the plane
+*/
+function findLinePlaneIntersectionCoords(px, py, pz, qx, qy, qz, p1, p2, p3) {
+  let N = getPlaneNormalVector(p1, p2, p3);
+  let a = N.x, b = N.y, c = N.z, d = 100;
+  
+  let tDenom = a*(qx-px) + b*(qy-py) + c*(qz-pz);
+  if (tDenom == 0) return null;
+
+  let t = - ( a*px + b*py + c*pz + d ) / tDenom;
+
+  return {
+      x: (px+t*(qx-px)),
+      y: (py+t*(qy-py)),
+      z: (pz+t*(qz-pz))
+  };
+}

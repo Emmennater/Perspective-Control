@@ -14,7 +14,5 @@ of the 3D objects
 run the html to witness greatness or just go to this link:<br>
 https://emmennater.github.io/Perspective-Control/
 
-<b>NOTE:</b><br>
-  The eye tracking feature doesn't work unless
-  you run it on your own webserver.
-  (use Live Server on VS Code)
+<b>UPDATE:</b>
+<p>  Eye tracking now working in browser!</p>

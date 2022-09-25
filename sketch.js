@@ -6,16 +6,7 @@
 /*    FACE TRACKER    */
 /**********************/
 
-video = document.getElementById('video')
-let info = null,
-  landmarks = null;
-
-Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-  faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-  faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-  faceapi.nets.faceExpressionNet.loadFromUri('/models')
-]).then(startVideo)
+let info = null, landmarks = null;
 
 function startVideo() {
   navigator.getUserMedia({
@@ -26,11 +17,39 @@ function startVideo() {
   )
 }
 
+function setupVideo() {
+  video = document.getElementById('video')
+  startVideo(video)
+
+  video.addEventListener('play', () => {
+    const displaySize = {
+      width: video.width,
+      height: video.height
+    }
+    setInterval(async () => {
+      const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
+      const resizedDetections = faceapi.resizeResults(detections, displaySize)
+      info = detections;
+    }, 100)
+  })
+}
+
 /**********************/
 /*    MAIN PROGRAM    */
 /**********************/
 
 function setup() {
+
+  // Setup video and eye tracking
+  let modelsUrl = "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/";
+  Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri(modelsUrl + 'tiny_face_detector_model-weights_manifest.json'),
+    faceapi.nets.faceLandmark68Net.loadFromUri(modelsUrl + 'face_landmark_68_model-weights_manifest.json'),
+    faceapi.nets.faceRecognitionNet.loadFromUri(modelsUrl + 'face_recognition_model-weights_manifest.json'),
+    faceapi.nets.faceExpressionNet.loadFromUri(modelsUrl + 'face_expression_model-weights_manifest.json')  
+  ]).then(setupVideo)
+
+  // Resume
   data = [];
   DATA = {
     camX: 0,
@@ -60,27 +79,6 @@ function setup() {
   Engine.init();
   // Engine.run();
 
-  video.addEventListener('play', () => {
-    // const canvas = faceapi.createCanvasFromMedia(video)
-    // document.body.append(canvas)
-    const displaySize = {
-      width: video.width,
-      height: video.height
-    }
-    // faceapi.matchDimensions(canvas, displaySize)
-    setInterval(async () => {
-      const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
-      const resizedDetections = faceapi.resizeResults(detections, displaySize)
-
-      info = detections;
-
-      // canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
-      // faceapi.draw.drawDetections(canvas, resizedDetections)
-      // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
-      // faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-    }, 100)
-  });
-
   X_DIV_RATIO = 32.585566103783;
   Y_DIV_RATIO = 35.918339113960144;
 }
@@ -93,9 +91,9 @@ function draw() {
   if (landmarks) {
     let iris = getIris();
     if (iris != null) {
-      DATA.headX = -iris.center.x/X_DIV_RATIO;
+      DATA.headX = -iris.center.x / X_DIV_RATIO;
       DATA.headY = iris.center.y;
-      DATA.headZ = -iris.center.z/Y_DIV_RATIO;
+      DATA.headZ = -iris.center.z / Y_DIV_RATIO;
     }
   }
 
@@ -112,7 +110,7 @@ function draw() {
 
   // World.objects[0].move(null, sin(frameCount/50) * 10, null);
   // World.objects[0].move(cos(frameCount/40) * 5, sin(frameCount/30) * 4 + 4, sin(frameCount/40) * 2);
-  World.objects[World.objects.length-1].move(null, null, null, frameCount / 100, frameCount / 100 + 50);
+  World.objects[World.objects.length - 1].move(null, null, null, frameCount / 100, frameCount / 100 + 50);
 }
 
 /**********************/
@@ -160,7 +158,7 @@ function getIris() {
     x: AVGL.x / AVGL.t,
     z: AVGL.z / AVGL.t
   };
-  
+
   // DATA.pupilDist = abs(LEFT.z - RIGHT.z);
   // DATA.pupilDist = constrain(DATA.pupilDist, 1, 7);
   // DATA.pupilD = lerp(DATA.pupilD, DATA.pupilDist, 0.1);

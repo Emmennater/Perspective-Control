@@ -22,6 +22,10 @@ function keyPressed() {
     setCenter();
   }
 
+  if (key == "r") {
+    resetCalibration();
+  }
+
   if (key == "m") {
     Overlay.visible = !Overlay.visible;
   }

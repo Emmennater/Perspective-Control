@@ -11,7 +11,12 @@ of the 3D objects
   with the top side of your monitor
 - Press c to calibrate when head is aligned<br>
   with the center of your monitor
+- Press r to reset calibration
 - Press m to toggle minimap
+
+<b>NOTE:</b> Always calibrate center first!<br>
+If you want to redo one of the calibrations make<br>
+sure to reset (r) before you do so.
 
 run the html to witness greatness or just go to this link:<br>
 https://emmennater.github.io/Perspective-Control/

@@ -3,6 +3,14 @@
 */
 
 /**********************/
+/*      DETAILS       */
+/**********************/
+
+const PI = 3.14159265359;
+const HEAD_WIDTH = 7.8; // inches
+const WEBCAM_FOV = 78 * (PI / 180); // radians
+
+/**********************/
 /*    FACE TRACKER    */
 /**********************/
 
@@ -80,10 +88,12 @@ function setup() {
   // Engine.run();
 
   // Eye tracking fine tuning (adjusting)
-  X_DIV_RATIO = 32.585566103783;
-  Z_DIV_RATIO = 35.918339113960144;
-  X_OFFSET = 0;
-  Z_OFFSET = 0;
+  DEF_X_DIV_RATIO = 32.738221303859284;
+  DEF_Z_DIV_RATIO = 33.2373100389952;
+  X_DIV_RATIO = DEF_X_DIV_RATIO; // 32.585566103783;
+  Z_DIV_RATIO = DEF_Z_DIV_RATIO; // 35.918339113960144;
+  X_OFFSET = -77.59896304945896;
+  Z_OFFSET = -74.81295890893206;
 }
 
 function draw() {
@@ -92,17 +102,18 @@ function draw() {
   updateLandmarks();
 
   if (landmarks) {
-    let iris = getIris();
-    if (iris != null) {
-      DATA.headX = (-iris.center.x) / X_DIV_RATIO + X_OFFSET;
-      DATA.headY = iris.center.y;
-      DATA.headZ = (-iris.center.z) / Z_DIV_RATIO + Z_OFFSET;
-    }
+    updateHead3DSpace();
+    // let iris = getIris();
+    // if (iris != null) {
+    //   DATA.headX = (-iris.center.x) / X_DIV_RATIO + X_OFFSET;
+    //   DATA.headY = iris.center.y;
+    //   DATA.headZ = (-iris.center.z) / Z_DIV_RATIO + Z_OFFSET;
+    // }
   }
 
   if (DATA.headX) {
     DATA.camX = lerp(DATA.camX, DATA.headX, 0.1);
-    DATA.camY = lerp(DATA.camY, DATA.headY, 0.02);
+    DATA.camY = lerp(DATA.camY, DATA.headY, 0.1);
     DATA.camZ = lerp(DATA.camZ, DATA.headZ, 0.1);
     Cam.move(DATA.camX, DATA.camY, DATA.camZ);
     Engine.update();
@@ -185,7 +196,8 @@ function getIris() {
   return {
     right: RIGHT,
     left: LEFT,
-    center: CENTER
+    center: CENTER,
+    eyeToEye: DIST
   };
 }
 
@@ -193,7 +205,10 @@ function setXDivRatio() {
   if (landmarks) {
     let iris = getIris();
     if (iris != null) {
-      let x = -iris.center.x;
+      // let x = abs(iris.center.x);
+      // DATA.headX = (-iris.center.x) / X_DIV_RATIO + X_OFFSET;
+      
+      let x = abs(DATA.headX);
       X_DIV_RATIO = x / (SCREEN_WIDTH / 2);
     }
   }
@@ -203,7 +218,9 @@ function setZDivRatio() {
   if (landmarks) {
     let iris = getIris();
     if (iris != null) {
-      let z = -iris.center.z;
+      // let z = abs(iris.center.z);
+      
+      let z = abs(DATA.headZ);
       Z_DIV_RATIO = z / (SCREEN_HEIGHT / 2);
     }
   }
@@ -213,12 +230,64 @@ function setCenter() {
   if (landmarks) {
     let iris = getIris();
     if (iris != null) {
-      let x = iris.center.x / X_DIV_RATIO;
-      let z = iris.center.z / Z_DIV_RATIO;
-      X_OFFSET = x;
-      Y_OFFSET = z;
+      // Reset these
+      X_DIV_RATIO = 1;
+      Z_DIV_RATIO = 1;
+
+      // Calibrate x and z
+      let x = iris.center.x;
+      let z = iris.center.z;
+      X_OFFSET = -iris.center.x;
+      Z_OFFSET = -iris.center.z;
+      
+      // let x = iris.center.x / X_DIV_RATIO;
+      // let z = iris.center.z / Z_DIV_RATIO;
+      // X_OFFSET = x;
+      // Y_OFFSET = z;
     }
   }
+}
+
+function resetCalibration() {
+  X_OFFSET = 0;
+  Y_OFFSET = 0;
+  X_DIV_RATIO = 1;
+  Z_DIV_RATIO = 1;
+}
+
+function updateHead3DSpace() {
+  let x, y, z;
+
+  // Get eye position on video
+  let iris = getIris();
+  if (iris == null) return;
+
+  // Find distance from head to camera
+  let D = (HEAD_WIDTH * WEBCAM_FOV) * (video.width / iris.eyeToEye)
+    /* fine tuning */ * 0.5 - 4;
+  
+  // print("Distance: "+D+"\"");
+
+  // X & Y Values
+  let cx = iris.center.x + X_OFFSET;
+  let headAngle = cx / (video.width / 2) * WEBCAM_FOV;
+  y = D;
+  x = cx;
+  // y = cos(headAngle) * D;
+  // x = sin(headAngle) * D;
+
+  // Z Value
+  let cz = iris.center.z + Z_OFFSET;
+  z = cz;
+  // headAngle = cz / (video.height / 2) * WEBCAM_FOV;
+  // z = sin(headAngle) * D;
+
+  DATA.headX = -x / X_DIV_RATIO;
+  DATA.headY = -y / 1.2 - 5;
+  DATA.headZ = -z / Z_DIV_RATIO;
+  
+  // print("("+x+","+y+","+z+")");
+
 }
 
 /*

@@ -208,7 +208,7 @@ function setXDivRatio() {
       // let x = abs(iris.center.x);
       // DATA.headX = (-iris.center.x) / X_DIV_RATIO + X_OFFSET;
       
-      let x = abs(DATA.headX);
+      let x = abs(DATA.headX * X_DIV_RATIO);
       X_DIV_RATIO = x / (SCREEN_WIDTH / 2);
     }
   }
@@ -220,7 +220,7 @@ function setZDivRatio() {
     if (iris != null) {
       // let z = abs(iris.center.z);
       
-      let z = abs(DATA.headZ);
+      let z = abs(DATA.headZ * Z_DIV_RATIO);
       Z_DIV_RATIO = z / (SCREEN_HEIGHT / 2);
     }
   }
@@ -231,8 +231,8 @@ function setCenter() {
     let iris = getIris();
     if (iris != null) {
       // Reset these
-      X_DIV_RATIO = 1;
-      Z_DIV_RATIO = 1;
+      // X_DIV_RATIO = 1;
+      // Z_DIV_RATIO = 1;
 
       // Calibrate x and z
       let x = iris.center.x;

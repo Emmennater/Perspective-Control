@@ -14,9 +14,7 @@ of the 3D objects
 - Press r to reset calibration
 - Press m to toggle minimap
 
-<b>NOTE:</b> Always calibrate center first!<br>
-If you want to redo one of the calibrations make<br>
-sure to reset (r) before you do so.
+<b>NOTE:</b> Remember to calibrate!<br>
 
 run the html to witness greatness or just go to this link:<br>
 https://emmennater.github.io/Perspective-Control/
